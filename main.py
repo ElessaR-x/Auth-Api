@@ -1,16 +1,18 @@
-from typing import Union
-import uvicorn
 from fastapi import FastAPI
+from auth.admin import router as admin_router
+from auth.reseller import router as reseller_router
+from auth.owner import router as owner_router
+from auth.auth import router as auth_router
 
 app = FastAPI()
 
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
+# Router'ları projeye dahil etme
+app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+app.include_router(admin_router, prefix="/admin", tags=["Admin"])
+app.include_router(reseller_router, prefix="/reseller", tags=["Reseller"])
+app.include_router(owner_router, prefix="/owner", tags=["Owner"])
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    import uvicorn
 
-    
+    uvicorn.run(app, host="localhost", port=8000)
