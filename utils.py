@@ -5,21 +5,13 @@ from datetime import datetime, timedelta
 
 # Fake user database
 fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$e/cnM/a5wr.pJkCeV7JzgOOvKvM/Usp0eXqeXvfRthAkm5q4vWxfO",
-        # bcrypt hashed password for "password"
-        "disabled": False,
-        "license_expiration": None
-    },
     "arda": {
         "username": "arda",
         "full_name": "Arda",
         "email": "arda@example.com",
         "hashed_password": "$2a$10$DaM3/xzpzN/VscepzEF0O.ko3hEDVPQZtbpcjUrAFuSZvTllB4Emq",  # bcrypt hashed password for "arda"
         "disabled": False,
+        "hwid": "xx",
         "license_expiration": None,
         "role": "owner"
     }

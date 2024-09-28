@@ -97,6 +97,25 @@ async def freeze_time(username: str, current_user: UserInDB = Depends(get_curren
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+    user.frozen_license_expiration = user.license_expiration
     user.license_expiration = None
     save_user(fake_users_db, user)
     return {"message": f"User {username}'s license time has been frozen."}
+
+
+# Kullanıcının süresini yeniden başlatma
+@router.post("/resume_time", tags=["Admin"], summary="Kullanıcının süresini yeniden başlatma")
+async def resume_time(username: str, current_user: UserInDB = Depends(get_current_user)):
+    check_minimum_role(current_user, ["admin", "owner"])
+
+    user = get_user(fake_users_db, username)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    if user.frozen_license_expiration:
+        user.license_expiration = user.frozen_license_expiration
+        user.frozen_license_expiration = None
+        save_user(fake_users_db, user)
+        return {"message": f"User {username}'s license time has been resumed."}
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User has no frozen license to resume.")

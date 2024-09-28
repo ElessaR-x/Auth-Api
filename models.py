@@ -27,6 +27,12 @@ class RegisterForm(BaseModel):
     full_name: Optional[str] = None
     email: Optional[str] = None
     license_key: str
+    hwid: str
+
+class LoginForm(BaseModel):
+    username: str
+    password: str
+    hwid: str
 
 class License(BaseModel):
     key: str
