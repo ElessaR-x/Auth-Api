@@ -7,8 +7,10 @@ from datetime import timedelta, datetime
 from starlette.datastructures import FormData
 
 from models import UserInDB, TokenData, RegisterForm, LoginForm
-from utils import get_user, save_user, fake_users_db
+from utils import get_user, save_user, fake_users_db, get_license , fake_licenses_db
 from passlib.context import CryptContext
+from auth.auth_utils import convert_expired_date
+
 
 # Router oluşturma
 router = APIRouter()
@@ -72,13 +74,29 @@ async def register(register_form: RegisterForm):
             detail="Username already registered",
         )
     hashed_password = pwd_context.hash(register_form.password)
+
+    license_duration_days = get_license(fake_licenses_db, license_key = register_form.license_key)
+
+    print(license_duration_days.duration_days)
+
+    license_expiration = convert_expired_date(license_duration_days.duration_days)
+
+    # Convert string to datetime
+    try:
+        license_expiration = datetime.strptime(license_expiration, '%d-%m-%Y %H:%M:%S')
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid date format: {e}",
+        )
+
     new_user = UserInDB(
         username=register_form.username,
         full_name=register_form.full_name,
         email=register_form.email,
         hashed_password=hashed_password,
         hwid=register_form.hwid,
-        license_expiration=None  # Lisans süresi olmadan kayıt
+        license_expiration=license_expiration  # Lisans süresi olmadan kayıt
     )
     save_user(fake_users_db, new_user)
     return {"message": "User registered successfully"}

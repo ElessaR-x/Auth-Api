@@ -4,6 +4,7 @@ from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
 from models import TokenData, UserInDB
 from utils import get_user, fake_users_db
+import datetime
 
 # OAuth2 şeması
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -33,6 +34,22 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
     return user
+
+# Kullanıcının girdiği lisans keyin süresini bitiş tarihine çevirme
+def convert_expired_date(license_duration_days: int):
+    # Geçerli tarihi al
+    current_date = datetime.datetime.now()
+
+    # Lisans süresini integer olarak al
+
+
+    # Geçerlilik süresini bugünden itibaren hesapla
+    expiration_date = current_date + datetime.timedelta(days=license_duration_days)
+
+    # Tarih ve saat formatını belirle
+    formatted_expiration_date = expiration_date.strftime("%d-%m-%Y %H:%M:%S")
+
+    return formatted_expiration_date
 
 # Kullanıcının rolünü kontrol etme
 def check_role(current_user: UserInDB, required_role: str):
