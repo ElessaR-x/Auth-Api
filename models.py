@@ -38,6 +38,11 @@ class License(BaseModel):
     key: str
     duration_days: int
 
+class RenewLicense(BaseModel):
+    username: str
+    password: str
+    license_key: str
+
 class AdminAction(BaseModel):
     username: str
     action: str  # ban, unban, hwid_reset, add_time, remove_time, freeze_time

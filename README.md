@@ -81,6 +81,12 @@ To run this project locally, you need:
 |--------|----------------------|-------------------------|
 | POST   | `/owner/change_role` | Change the role of a user. |
 
+### Customer
+
+| Method | Endpoint                  | Description        |
+|--------|---------------------------|--------------------|
+| POST   | `/customer/renew_license` | Renew the license. |
+
 ## Authorization
 To access certain admin and reseller endpoints, you need to be authorized. Click the `Authorize` button in the API documentation and enter the required credentials.
 
