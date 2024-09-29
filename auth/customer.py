@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from models import RenewLicense, UserInDB
+from models import RenewLicense, TransferLicense,UserInDB
 from utils import save_license, fake_licenses_db, get_license, get_user, fake_users_db, save_user
 from auth.auth_utils import get_current_user, check_role
 from datetime import datetime, timedelta
@@ -36,3 +36,38 @@ async def customer_renew_license(renew_form: RenewLicense):
 
     return {"message": "License renewal successfully"}
 
+
+# Customer lisaans transfer işlemi
+@router.post("/transfer_license", tags=["Customer"], summary="Customer lisans transfer")
+async def customer_transfer_license(renew_form: TransferLicense, current_user: UserInDB = Depends(get_current_user)):
+
+    if renew_form.transfer_duration <= 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Transfer duration must be greater than zero.")
+
+    if current_user.license_expiration < datetime.utcnow():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="User has no valid license: license expired.")
+
+    if current_user.license_expiration < (datetime.utcnow() + timedelta(days=renew_form.transfer_duration)):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Transfer duration exceeds license validity.")
+
+    current_user.license_expiration = current_user.license_expiration - timedelta(days=renew_form.transfer_duration)
+    save_user(fake_users_db, current_user)
+
+    transfer_user = get_user(fake_users_db, renew_form.transfer_username)
+
+    if transfer_user.license_expiration <= datetime.utcnow():
+        transfer_user.license_expiration = datetime.utcnow() + timedelta(days=renew_form.transfer_duration)
+    else:
+        transfer_user.license_expiration = transfer_user.license_expiration + timedelta(days=renew_form.transfer_duration)
+
+    save_user(fake_users_db, transfer_user)
+
+    return {"message": "License transfer successfully"}
+
+@router.post("/get_user", tags=["Customer"])
+async def customer_get_user(username: str):
+    user = get_user(fake_users_db, username)
+    return user

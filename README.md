@@ -83,9 +83,10 @@ To run this project locally, you need:
 
 ### Customer
 
-| Method | Endpoint                  | Description        |
-|--------|---------------------------|--------------------|
-| POST   | `/customer/renew_license` | Renew the license. |
+| Method | Endpoint                     | Description           |
+|--------|------------------------------|-----------------------|
+| POST   | `/customer/renew_license`    | Renew the license.    |
+| POST   | `/customer/transfer_license` | Transfer the license. |
 
 ## Authorization
 To access certain admin and reseller endpoints, you need to be authorized. Click the `Authorize` button in the API documentation and enter the required credentials.
