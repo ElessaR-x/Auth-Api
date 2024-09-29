@@ -12,7 +12,7 @@ fake_users_db = {
         "hashed_password": "$2a$10$DaM3/xzpzN/VscepzEF0O.ko3hEDVPQZtbpcjUrAFuSZvTllB4Emq",  # bcrypt hashed password for "arda"
         "disabled": False,
         "hwid": "xx",
-        "license_expiration": None,
+        "license_expiration": "2024-07-29T07:57:54",
         "role": "owner"
     }
 }
