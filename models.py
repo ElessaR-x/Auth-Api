@@ -43,6 +43,10 @@ class RenewLicense(BaseModel):
     password: str
     license_key: str
 
+class TransferLicense(BaseModel):
+    transfer_username: str
+    transfer_duration: int
+
 class AdminAction(BaseModel):
     username: str
     action: str  # ban, unban, hwid_reset, add_time, remove_time, freeze_time
