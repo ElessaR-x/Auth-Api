@@ -1,11 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from models import RenewLicense, TransferLicense,UserInDB
+from models import RenewLicense, TransferLicense,UserInDB,ResetPassword
 from utils import save_license, fake_licenses_db, get_license, get_user, fake_users_db, save_user
 from auth.auth_utils import get_current_user, check_role
 from datetime import datetime, timedelta
+from passlib.context import CryptContext
 # Router oluşturma
 router = APIRouter()
 
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+# Parola doğrulama
+def verify_password(plain_password: str, hashed_password: str):
+    return pwd_context.verify(plain_password, hashed_password)
 
 # Customer lisans yenileme işlemi
 @router.post("/renew_license", tags=["Customer"], summary="Customer lisans yenileme")
@@ -67,7 +75,33 @@ async def customer_transfer_license(renew_form: TransferLicense, current_user: U
 
     return {"message": "License transfer successfully"}
 
+
+
+# Customer şifre sıfırlama işlemi
+@router.post("/reset_password", tags=["Customer"], summary="Customer şifre sıfırlama")
+async def customer_reset_password(reset_form: ResetPassword, current_user: UserInDB = Depends(get_current_user)):
+
+    if not verify_password(reset_form.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Current password is incorrect.")
+
+    hashed_new_password = pwd_context.hash(reset_form.new_password)
+
+    user = get_user(fake_users_db, current_user.username)
+
+    user.hashed_password = hashed_new_password
+
+    print(user)
+
+    save_user(fake_users_db, user)
+
+
+
+    return {"message": "Password reset successfully"}
+
+
 @router.post("/get_user", tags=["Customer"])
 async def customer_get_user(username: str):
     user = get_user(fake_users_db, username)
-    return user
+    print(user)
+    return "Check Console"
