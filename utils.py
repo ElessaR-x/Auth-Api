@@ -48,6 +48,8 @@ def save_user(db, user: UserInDB):
         "email": user.email,
         "hashed_password": user.hashed_password,
         "license_expiration": user.license_expiration,
+        "role": user.role,
+        "hwid": user.hwid,
         "disabled": False,
     }
 
