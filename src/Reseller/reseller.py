@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from models import License, UserInDB
-from utils import save_license, fake_licenses_db
-from auth.auth_utils import get_current_user, check_role
+from utils import save_license, fake_licenses_db, get_current_user, check_role
 
 # Router oluşturma
 router = APIRouter()

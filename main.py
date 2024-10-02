@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from auth.admin import router as admin_router
-from auth.reseller import router as reseller_router
-from auth.owner import router as owner_router
-from auth.auth import router as auth_router
-from auth.customer import router as customer_router
+from src.Admin.admin import router as admin_router
+from src.Reseller.reseller import router as reseller_router
+from src.Owner.owner import router as owner_router
+from src.Auth.auth import router as auth_router
+from src.Customer.customer import router as customer_router
 
 app = FastAPI()
 

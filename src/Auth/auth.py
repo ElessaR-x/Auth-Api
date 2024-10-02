@@ -1,15 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, HTTPException, status, Request
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from datetime import timedelta, datetime
-
-from starlette.datastructures import FormData
-
 from models import UserInDB, TokenData, RegisterForm, LoginForm
-from utils import get_user, save_user, fake_users_db, get_license , fake_licenses_db
-from passlib.context import CryptContext
-from auth.auth_utils import convert_expired_date
+from utils import get_user, save_user, fake_users_db, get_license , fake_licenses_db, ALGORITHM, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES
+from src.Auth.auth_utils import convert_expired_date, create_access_token, pwd_context, verify_hwid, authenticate_user
 
 
 # Router oluşturma
@@ -18,50 +14,7 @@ router = APIRouter()
 # OAuth2 şeması
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-# Secret key and algorithm settings
-SECRET_KEY = "your-secret-key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-# Token oluşturma işlevi
-def create_access_token(data: dict, expires_delta: timedelta = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
-# Parola doğrulama
-def verify_password(plain_password: str, hashed_password: str):
-    return pwd_context.verify(plain_password, hashed_password)
-
-# HWID kontrolü
-def verify_hwid(db, username: str, hwid: str):
-    user = get_user(db, username)
-
-    if not user.hwid == hwid:
-        return False
-
-    return user
-
-
-# Kullanıcı kimlik doğrulama
-def authenticate_user(db, username: str, password: str):
-    user = get_user(db, username)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-
-    return user
 
 
 # Kullanıcı kaydı (register)
