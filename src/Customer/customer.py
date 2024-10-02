@@ -1,19 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from models import RenewLicense, TransferLicense,UserInDB,ResetPassword
-from utils import save_license, fake_licenses_db, get_license, get_user, fake_users_db, save_user
-from auth.auth_utils import get_current_user, check_role
+from utils import save_license, fake_licenses_db, get_license, get_user, fake_users_db, save_user, pwd_context, get_current_user
 from datetime import datetime, timedelta
-from passlib.context import CryptContext
+from src.Customer.customer_utils import verify_password
+
 # Router oluşturma
 router = APIRouter()
-
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-# Parola doğrulama
-def verify_password(plain_password: str, hashed_password: str):
-    return pwd_context.verify(plain_password, hashed_password)
 
 # Customer lisans yenileme işlemi
 @router.post("/renew_license", tags=["Customer"], summary="Customer lisans yenileme")

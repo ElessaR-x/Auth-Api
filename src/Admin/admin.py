@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import timedelta, datetime
 from models import UserInDB
-from utils import fake_users_db, get_user, save_user
-from auth.auth_utils import get_current_user, check_minimum_role
+from utils import fake_users_db, get_user, save_user, get_current_user, check_minimum_role
 
 # Router oluşturma
 router = APIRouter()
